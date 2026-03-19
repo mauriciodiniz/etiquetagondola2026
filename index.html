@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Etiquetas 50 mm</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="card controls-card">
+        <div class="heading">
+          <p class="eyebrow">Impressora termica Bluetooth</p>
+          <h1>Etiqueta 50 mm</h1>
+          <p class="intro">
+            Preencha o nome e o preco do produto. A impressao usa o dialogo do
+            navegador para enviar a etiqueta para a impressora pareada.
+          </p>
+        </div>
+
+        <form class="form" id="label-form">
+          <label class="field">
+            <span>NOME</span>
+            <textarea
+              id="product-name"
+              name="product-name"
+              rows="3"
+              maxlength="80"
+              placeholder="Ex.: Cafe Torrado Premium 500 g"
+            ></textarea>
+          </label>
+
+          <label class="field">
+            <span>PRECO</span>
+            <input
+              id="product-price"
+              name="product-price"
+              type="text"
+              inputmode="decimal"
+              placeholder="Ex.: 19,90"
+            />
+          </label>
+
+          <button class="print-button" id="print-button" type="submit">
+            IMPRIMIR
+          </button>
+        </form>
+      </section>
+
+      <section class="card preview-card">
+        <div class="preview-header">
+          <p class="eyebrow">Pre-visualizacao</p>
+          <p class="hint">Largura fixa de 50 mm para impressao termica.</p>
+        </div>
+
+        <div class="preview-stage">
+          <article class="label-sheet" aria-label="Etiqueta pronta para impressao">
+            <div class="label-name" id="label-name">NOME DO PRODUTO</div>
+            <div class="label-price" id="label-price">
+              <span class="currency-symbol">R$</span>
+              <span class="currency-value" id="label-price-value">0,00</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById("label-form");
+      const nameInput = document.getElementById("product-name");
+      const priceInput = document.getElementById("product-price");
+      const labelName = document.getElementById("label-name");
+      const labelPriceValue = document.getElementById("label-price-value");
+
+      const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+
+      function normalizePrice(value) {
+        const cleaned = value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+        const parsed = Number.parseFloat(cleaned);
+
+        if (Number.isNaN(parsed)) {
+          return null;
+        }
+
+        const formatted = currencyFormatter.format(parsed);
+        return formatted.replace("R$", "").trim();
+      }
+
+      function updatePreview() {
+        const productName = nameInput.value.trim();
+        const formattedPrice = normalizePrice(priceInput.value.trim());
+
+        labelName.textContent = productName || "NOME DO PRODUTO";
+        labelPriceValue.textContent = formattedPrice || "0,00";
+      }
+
+      nameInput.addEventListener("input", updatePreview);
+      priceInput.addEventListener("input", updatePreview);
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        updatePreview();
+        window.print();
+      });
+
+      updatePreview();
+    </script>
+  </body>
+</html>
