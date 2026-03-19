@@ -1,0 +1,1 @@
+# etiquetagondola2026
